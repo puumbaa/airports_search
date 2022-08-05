@@ -30,9 +30,9 @@ public class Trie {
         Node currentNode = this.root;
         for (int i = 0; i < prefix.length(); i++) {
             Node nextNode = currentNode.children.get(prefix.charAt(i));
-            if (nextNode == null){
+            if (nextNode == null) {
                 return Collections.emptySet();
-            }else {
+            } else {
                 currentNode = nextNode;
             }
         }
