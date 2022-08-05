@@ -1,14 +1,12 @@
-package com.renue.internship.app;
+package com.renue.internship.app.old;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.TreeMap;
-import java.util.stream.Stream;
 
-public class Application {
+public class ApplicationVersion1 {
     public static void main(String[] args) {
         if (args.length == 0) {
             throw new IllegalArgumentException("Missing column number");
@@ -16,9 +14,8 @@ public class Application {
         int columnIndex = Integer.parseInt(args[0]) - 1;
         Scanner sc = new Scanner(System.in);
         Map<String, String> result = new TreeMap<>();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Application.class.getClassLoader().getResourceAsStream("airports.csv")))) {
-            while (true) {
+        while (true) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(ApplicationVersion1.class.getClassLoader().getResourceAsStream("airports.csv"))))) {
                 System.out.println("Введите строку: ");
                 String query = "\"" + sc.nextLine();
                 long start = System.currentTimeMillis();
@@ -32,16 +29,13 @@ public class Application {
                         result.put(columnValue, currentLine);
                     }
                 }
-                result.forEach((s, s2) -> {
-                    System.out.println(s + "[" + s2 + "]");
-                });
+                result.forEach((s, s2) -> System.out.println(s + "[" + s2 + "]"));
                 long time = System.currentTimeMillis() - start;
                 System.out.printf("Количество найденных строк: %s | Затраченное время на поиск: %s мс", result.size(), time);
                 System.out.println();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-
     }
 }
