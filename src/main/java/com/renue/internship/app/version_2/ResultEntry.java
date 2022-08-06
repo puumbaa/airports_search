@@ -1,4 +1,4 @@
-package com.renue.internship.app;
+package com.renue.internship.app.version_2;
 
 import java.util.Comparator;
 

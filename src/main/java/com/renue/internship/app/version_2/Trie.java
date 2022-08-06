@@ -1,10 +1,12 @@
-package com.renue.internship.app;
+package com.renue.internship.app.version_2;
 
 
 import java.util.*;
 
 public class Trie {
     private final Node root;
+
+
 
     public Trie() {
         this.root = new Node('\0');

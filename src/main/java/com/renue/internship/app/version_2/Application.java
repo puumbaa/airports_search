@@ -1,7 +1,6 @@
-package com.renue.internship.app;
+package com.renue.internship.app.version_2;
 
 
-import com.renue.internship.app.old.ApplicationVersion1;
 import com.renue.internship.parsers.Parser;
 
 import java.io.BufferedReader;
@@ -13,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class ApplicationVersion2 {
+public class Application {
 
 
     public static void main(String[] args) {
@@ -27,7 +26,7 @@ public class ApplicationVersion2 {
         Parser parser = new Parser("src\\main\\resources\\airports.csv");
         boolean isNumberTypeColumn;
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(ApplicationVersion1.class.getClassLoader().getResourceAsStream("airports.csv"))))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(com.renue.internship.app.version_1.Application.class.getClassLoader().getResourceAsStream("airports.csv"))))) {
 
             String currentLine = reader.readLine();
             isNumberTypeColumn = currentLine.split(",")[columnIndex].matches("[0-9]+");
@@ -49,7 +48,7 @@ public class ApplicationVersion2 {
                 if (query.equals("\"!quit")) {
                     break;
                 }
-                long start = System.currentTimeMillis();
+
                 Set<Integer> hits = trie.hits(query);
 
                 ConcurrentSkipListSet<ResultEntry> resultSet;
@@ -72,9 +71,7 @@ public class ApplicationVersion2 {
                 executorService.awaitTermination(10, TimeUnit.SECONDS);
                 resultSet.forEach(result::append);
                 System.out.println(result);
-                System.out.printf("Количество найденных строк: %s | Затраченное время на поиск: %s мс", hits.size(),
-                        System.currentTimeMillis() - start);
-                System.out.println();
+
             }
 
         } catch (IOException e) {

@@ -1,4 +1,4 @@
-package com.renue.internship.app.old;
+package com.renue.internship.app.version_1;
 
 import java.io.*;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-public class ApplicationVersion1 {
+public class Application {
     public static void main(String[] args) {
         if (args.length == 0) {
             throw new IllegalArgumentException("Missing column number");
@@ -15,7 +15,7 @@ public class ApplicationVersion1 {
         Scanner sc = new Scanner(System.in);
         Map<String, String> result = new TreeMap<>();
         while (true) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(ApplicationVersion1.class.getClassLoader().getResourceAsStream("airports.csv"))))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Application.class.getClassLoader().getResourceAsStream("airports.csv"))))) {
                 System.out.println("Введите строку: ");
                 String query = "\"" + sc.nextLine();
                 long start = System.currentTimeMillis();
