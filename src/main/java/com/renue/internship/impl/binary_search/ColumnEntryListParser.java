@@ -1,8 +1,10 @@
-package com.renue.internship.parsers;
+package com.renue.internship.impl.binary_search;
 
-import com.renue.internship.app.version_2.ColumnEntry;
+import com.renue.internship.common.Parser;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 
@@ -15,7 +17,7 @@ public class ColumnEntryListParser extends Parser<List<ColumnEntry>> {
     public void parseColumn(int columnIndex, List<ColumnEntry> column) {
         long offset = 0;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
             String currentLine = reader.readLine();
             String cell = getCell(columnIndex, currentLine);
             while (currentLine != null) {

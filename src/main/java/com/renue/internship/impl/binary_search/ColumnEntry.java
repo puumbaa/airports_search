@@ -1,4 +1,4 @@
-package com.renue.internship.app.version_2;
+package com.renue.internship.impl.binary_search;
 
 public class ColumnEntry {
     private final long bytesBeforeRow;

@@ -1,4 +1,4 @@
-package com.renue.internship.app.version_1;
+package com.renue.internship.impl.trie;
 
 
 import java.util.*;

@@ -1,22 +1,32 @@
-package com.renue.internship.app.version_2;
+package com.renue.internship.impl.binary_search;
 
-import com.renue.internship.app.common.AutoComplete;
-import com.renue.internship.app.common.ResultEntry;
-import com.renue.internship.parsers.Parser;
+import com.renue.internship.common.AutoComplete;
+import com.renue.internship.common.ResultEntry;
+import com.renue.internship.common.Parser;
 
 import java.util.*;
 
-import static com.renue.internship.utils.ApplicationUtils.print;
+import static com.renue.internship.util.IOUtils.print;
 
 public class AutocompleteBinarySearchImpl implements AutoComplete {
 
     private final Parser<List<ColumnEntry>> parser;
     private final List<ColumnEntry> keywordEntries;
 
+    private Map<String, List<ResultEntry>> cache;
 
-    public AutocompleteBinarySearchImpl(Parser<List<ColumnEntry>> parser) {
+    private final boolean useCache;
+
+    private static final int CACHE_MAX_SIZE = 10;
+
+
+    public AutocompleteBinarySearchImpl(Parser<List<ColumnEntry>> parser, boolean useCache) {
         if (parser == null) {
             throw new IllegalStateException("Парсер должен быть задан");
+        }
+        this.useCache = useCache;
+        if (useCache) {
+            cache = new HashMap<>();
         }
         this.parser = parser;
         this.keywordEntries = new ArrayList<>();
@@ -24,27 +34,55 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
 
 
     public void run(int columnIndex) {
-        parser.parseColumn(columnIndex, keywordEntries);
+        parse(columnIndex);
+        sort();
+        start();
+    }
 
+    private void parse(int columnIndex) {
+        parser.parseColumn(columnIndex, keywordEntries);
+    }
+
+    private void start() {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.println("Введите строку: ");
+            String query = sc.nextLine().toLowerCase();
+            if (query.equals("!quit")) {
+                break;
+            }
+
+            long startTime = System.currentTimeMillis();
+
+            List<ResultEntry> resultSet;
+            if (useCache) {
+                resultSet = searchInCache(query);
+            } else {
+                PointerCouple pointerCouple = reduceSearchLimits(query, keywordEntries);
+                resultSet = findMatches(pointerCouple, query);
+            }
+            print(resultSet, startTime);
+            if (useCache && cache.size() > CACHE_MAX_SIZE) {
+                cache.clear();
+            }
+        }
+    }
+
+    private List<ResultEntry> searchInCache(String query) {
+        List<ResultEntry> resultSet = cache.get(query);
+        if (resultSet == null) {
+            PointerCouple pointerCouple = reduceSearchLimits(query, keywordEntries);
+            resultSet = findMatches(pointerCouple, query);
+        }
+        return resultSet;
+    }
+
+    private void sort() {
         if (!keywordEntries.isEmpty() && keywordEntries.get(0).getCell().matches("[0-9]+")) {
             keywordEntries.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCell())));
         } else {
             keywordEntries.sort(Comparator.comparing(ColumnEntry::getCell));
         }
-        Scanner sc = new Scanner(System.in);
-
-        while (true) {
-            System.out.println("Введите строку: ");
-            String query = sc.nextLine().toLowerCase();
-            if (query.equals("\"!quit")) {
-                break;
-            }
-            long startTime = System.currentTimeMillis();
-            PointerCouple pointerCouple = reduceSearchLimits(query, keywordEntries);
-            List<ResultEntry> resultSet = findMatches(pointerCouple, query);
-            print(resultSet, startTime);
-        }
-        keywordEntries.clear();
     }
 
 
@@ -77,8 +115,11 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
         for (int i = pointerCouple.getStart(); i < pointerCouple.getEnd(); i++) {
             ColumnEntry columnEntry = keywordEntries.get(i);
             if (columnEntry.getCell().startsWith(query)) {
-                resultEntries.add(new ResultEntry(columnEntry.getCell(),parser.parseLine(columnEntry.getBytesBeforeRow())));
+                resultEntries.add(new ResultEntry(columnEntry.getCell(), parser.parseLine(columnEntry.getBytesBeforeRow())));
             }
+        }
+        if (useCache) {
+            cache.put(query, resultEntries);
         }
         return resultEntries;
     }

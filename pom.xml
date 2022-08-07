@@ -24,7 +24,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.renue.internship.app.version_1.Application</mainClass>
+                            <mainClass>com.renue.internship.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

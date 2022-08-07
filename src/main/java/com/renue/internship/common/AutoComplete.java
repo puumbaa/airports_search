@@ -1,5 +1,6 @@
-package com.renue.internship.app.common;
+package com.renue.internship.common;
 
+@FunctionalInterface
 public interface AutoComplete {
     void run(int columnIndex);
 }
