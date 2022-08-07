@@ -2,10 +2,11 @@ package com.renue.internship.impl.trie;
 
 
 import com.renue.internship.common.AutoComplete;
-import com.renue.internship.common.ResultEntry;
 import com.renue.internship.common.Parser;
+import com.renue.internship.common.ResultEntry;
 
-import java.util.*;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,9 +33,12 @@ public class AutoCompleteTrieImpl implements AutoComplete {
 
     @Override
     public void run(int columnIndex) {
-        parser.parseColumn(columnIndex, trie);
-        Scanner sc = new Scanner(System.in);
+        parse(columnIndex);
+        start(columnIndex);
+    }
 
+    private void start(int columnIndex) {
+        Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.println("Введите строку: ");
             String query = sc.nextLine().toLowerCase();
@@ -42,14 +46,16 @@ public class AutoCompleteTrieImpl implements AutoComplete {
                 break;
             }
             long start = System.currentTimeMillis();
-            Set<Integer> hits = trie.hits(query);
-            ConcurrentSkipListSet<ResultEntry> resultSet = getResultSet(hits, query, columnIndex);
-            print(resultSet,start);
+            Set<ResultEntry> resultSet = getResultSet(trie.hits(query), query, columnIndex);
+            print(resultSet, start);
         }
-
     }
 
-    private ConcurrentSkipListSet<ResultEntry> getResultSet(Set<Integer> hits, String query, int columnIndex) {
+    private void parse(int columnIndex) {
+        parser.parseColumn(columnIndex, trie);
+    }
+
+    private Set<ResultEntry> getResultSet(Set<Integer> hits, String query, int columnIndex) {
         ConcurrentSkipListSet<ResultEntry> resultSet;
         if (trie.isNumberTypeTrie()) {
             resultSet = new ConcurrentSkipListSet<>(new ResultEntry.NumberTypeComparator());
@@ -70,7 +76,7 @@ public class AutoCompleteTrieImpl implements AutoComplete {
             }
             executorService.shutdown();
             //noinspection ResultOfMethodCallIgnored
-            executorService.awaitTermination(10, TimeUnit.SECONDS);
+            executorService.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
