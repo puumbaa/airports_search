@@ -1,4 +1,4 @@
-package com.renue.internship.app.version_2;
+package com.renue.internship.app.version_1;
 
 
 import java.util.*;
@@ -6,20 +6,36 @@ import java.util.*;
 public class Trie {
     private final Node root;
 
-
-
-    public Trie() {
-        this.root = new Node('\0');
+    public int getMaxDepth() {
+        return maxDepth;
     }
 
-    public void insert(String word, int line) {
+    private final int maxDepth;
+
+    private boolean isNumberTypeTrie;
+
+    public boolean isNumberTypeTrie() {
+        return isNumberTypeTrie;
+    }
+
+    public void setNumberTypeTrie(boolean numberTypeTrie) {
+        isNumberTypeTrie = numberTypeTrie;
+    }
+
+    public Trie(int maxDepth) {
+        this.root = new Node('\0');
+        this.maxDepth = maxDepth;
+    }
+
+    public void insert(String word, int offset) {
         Node root = this.root;
-        for (int i = 0; i < word.length(); i++) {
+        int bound = Math.min(word.length(), maxDepth);
+        for (int i = 0; i < bound; i++) {
             Node node = root.children.get(word.charAt(i));
             if (node != null) {
-                node.lineNumbers.add(line);
+                node.offsets.add(offset);
             } else {
-                Node newNode = new Node(word.charAt(i), line);
+                Node newNode = new Node(word.charAt(i), offset);
                 root.children.put(word.charAt(i), newNode);
                 node = newNode;
             }
@@ -30,7 +46,8 @@ public class Trie {
 
     public Set<Integer> hits(String prefix) {
         Node currentNode = this.root;
-        for (int i = 0; i < prefix.length(); i++) {
+        int bound = Math.min(prefix.length(), maxDepth);
+        for (int i = 0; i < bound; i++) {
             Node nextNode = currentNode.children.get(prefix.charAt(i));
             if (nextNode == null) {
                 return Collections.emptySet();
@@ -38,23 +55,23 @@ public class Trie {
                 currentNode = nextNode;
             }
         }
-        return currentNode.lineNumbers;
+        return currentNode.offsets;
     }
 
     public static class Node {
         private final char c;
         private final Map<Character, Node> children;
-        private final Set<Integer> lineNumbers;
+        private final Set<Integer> offsets;
 
         public Node(char c) {
             this.c = c;
             children = new HashMap<>();
-            lineNumbers = new HashSet<>();
+            offsets = new HashSet<>();
         }
 
         public Node(char c, Integer lineNumber) {
             this(c);
-            lineNumbers.add(lineNumber);
+            offsets.add(lineNumber);
         }
 
         @Override
@@ -62,12 +79,12 @@ public class Trie {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Node node = (Node) o;
-            return c == node.c && Objects.equals(children, node.children) && Objects.equals(lineNumbers, node.lineNumbers);
+            return c == node.c && Objects.equals(children, node.children) && Objects.equals(offsets, node.offsets);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(c, children, lineNumbers);
+            return Objects.hash(c, children, offsets);
         }
     }
 }
