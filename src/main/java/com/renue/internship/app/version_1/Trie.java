@@ -58,7 +58,7 @@ public class Trie {
         return currentNode.offsets;
     }
 
-    public static class Node {
+    private static class Node {
         private final char c;
         private final Map<Character, Node> children;
         private final Set<Integer> offsets;
