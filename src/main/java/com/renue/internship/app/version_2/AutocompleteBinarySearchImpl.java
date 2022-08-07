@@ -1,7 +1,8 @@
 package com.renue.internship.app.version_2;
 
-import com.renue.internship.app.AutoComplete;
-import com.renue.internship.parsers.ColumnEntryParser;
+import com.renue.internship.app.common.AutoComplete;
+import com.renue.internship.app.common.ResultEntry;
+import com.renue.internship.parsers.Parser;
 
 import java.util.*;
 
@@ -9,21 +10,22 @@ import static com.renue.internship.utils.ApplicationUtils.print;
 
 public class AutocompleteBinarySearchImpl implements AutoComplete {
 
-    private final ColumnEntryParser parser;
+    private final Parser<List<ColumnEntry>> parser;
     private final List<ColumnEntry> keywordEntries;
 
 
-    public AutocompleteBinarySearchImpl(ColumnEntryParser parser, int columnIndex) {
+    public AutocompleteBinarySearchImpl(Parser<List<ColumnEntry>> parser) {
         if (parser == null) {
             throw new IllegalStateException("Парсер должен быть задан");
         }
         this.parser = parser;
-        this.keywordEntries = parser.parseColumn(columnIndex);
+        this.keywordEntries = new ArrayList<>();
     }
 
 
+    public void run(int columnIndex) {
+        parser.parseColumn(columnIndex, keywordEntries);
 
-    public void run() {
         if (!keywordEntries.isEmpty() && keywordEntries.get(0).getCell().matches("[0-9]+")) {
             keywordEntries.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCell())));
         } else {
@@ -39,9 +41,10 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
             }
             long startTime = System.currentTimeMillis();
             PointerCouple pointerCouple = reduceSearchLimits(query, keywordEntries);
-            ResultSet resultSet = findMatches(pointerCouple, query);
+            List<ResultEntry> resultSet = findMatches(pointerCouple, query);
             print(resultSet, startTime);
         }
+        keywordEntries.clear();
     }
 
 
@@ -66,19 +69,37 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
         return new PointerCouple(startIndex, endIndex);
     }
 
-    private ResultSet findMatches(PointerCouple pointerCouple, String query) {
+    private List<ResultEntry> findMatches(PointerCouple pointerCouple, String query) {
         if (pointerCouple.getStart() > pointerCouple.getEnd()) {
-            return ResultSet.empty();
+            return Collections.emptyList();
         }
-        ResultSet resultSet = new ResultSet();
+        List<ResultEntry> resultEntries = new ArrayList<>();
         for (int i = pointerCouple.getStart(); i < pointerCouple.getEnd(); i++) {
             ColumnEntry columnEntry = keywordEntries.get(i);
             if (columnEntry.getCell().startsWith(query)) {
-                columnEntry.setRow(parser.parseLine(columnEntry.getBytesBeforeRow()));
-                resultSet.add(columnEntry);
+                resultEntries.add(new ResultEntry(columnEntry.getCell(),parser.parseLine(columnEntry.getBytesBeforeRow())));
             }
         }
-        return resultSet;
+        return resultEntries;
     }
+
+    private static class PointerCouple {
+        private final int start;
+        private final int end;
+
+        public int getStart() {
+            return start;
+        }
+
+        public int getEnd() {
+            return end;
+        }
+
+        public PointerCouple(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+    }
+
 
 }

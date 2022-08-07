@@ -1,88 +1,80 @@
 package com.renue.internship.app.version_1;
 
 
-import com.renue.internship.app.AutoComplete;
-import com.renue.internship.parsers.ColumnEntryParser;
+import com.renue.internship.app.common.AutoComplete;
+import com.renue.internship.app.common.ResultEntry;
+import com.renue.internship.parsers.Parser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.renue.internship.utils.ApplicationUtils.getColumnIndex;
+import static com.renue.internship.utils.ApplicationUtils.print;
+
 
 public class AutoCompleteTrieImpl implements AutoComplete {
 
-    // todo: refactoring & implement run method
-    public static void main(String[] args) {
+    private final Parser<Trie> parser;
+    private final Trie trie;
 
-        int columnIndex = getColumnIndex(args);
+    public AutoCompleteTrieImpl(Parser<Trie> parser, int maxDepth) {
+        if (maxDepth < 1 || maxDepth > 4) {
+            throw new IllegalArgumentException("Максимальная глубина должна быть в промежутке от 1 до 4");
+        }
+        if (parser == null) {
+            throw new IllegalStateException("Парсер должен быть задан");
+        }
+        this.parser = parser;
+        this.trie = new Trie(maxDepth);
+    }
+
+    @Override
+    public void run(int columnIndex) {
         Scanner sc = new Scanner(System.in);
-        Map<Integer, Long> charsBeforePerLine = new HashMap<>();
-        Trie trie = new Trie();
-        ColumnEntryParser parser = new ColumnEntryParser("src\\main\\resources\\airports.csv");
-        boolean isNumberTypeColumn;
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(AutoCompleteTrieImpl.class.getClassLoader().getResourceAsStream("airports.csv"))))) {
+        while (true) {
+            parser.parseColumn(columnIndex, trie);
 
-            String currentLine = reader.readLine();
-            isNumberTypeColumn = currentLine.split(",")[columnIndex].matches("[0-9]+");
-            long offset = 0;
-            for (int i = 0; currentLine != null; i++, currentLine = reader.readLine()) {
-                String word = currentLine.split(",")[columnIndex].replaceAll("\"", "").toLowerCase();
-                charsBeforePerLine.put(i, offset);
-                trie.insert(word, i);
-                long notOneByteCharactersCount = 0;
-                for (int j = 0; j < currentLine.length(); j++) {
-                    notOneByteCharactersCount += String.valueOf(currentLine.charAt(j)).getBytes().length - 1;
-                }
-                offset += currentLine.length() + notOneByteCharactersCount + 1;
+            System.out.println("Введите строку: ");
+            String query = sc.nextLine().toLowerCase();
+            if (query.equals("\"!quit")) {
+                break;
             }
-
-            while (true) {
-                System.out.println("Введите строку: ");
-                String query = sc.nextLine();
-                if (query.equals("\"!quit")) {
-                    break;
-                }
-
-                Set<Integer> hits = trie.hits(query);
-
-                ConcurrentSkipListSet<ResultEntry> resultSet;
-                if (isNumberTypeColumn) {
-                    resultSet = new ConcurrentSkipListSet<>(new ResultEntry.NumberTypeComparator());
-                } else {
-                    resultSet = new ConcurrentSkipListSet<>();
-                }
-
-                StringBuilder result = new StringBuilder();
-                ExecutorService executorService = Executors.newCachedThreadPool();
-                for (Integer lineNumber : hits) {
-                    executorService.submit(() -> {
-                        String line = parser.parseLine(charsBeforePerLine.get(lineNumber));
-                        resultSet.add(new ResultEntry(line.split(",")[columnIndex], line));
-                    });
-                }
-                executorService.shutdown();
-                //noinspection ResultOfMethodCallIgnored
-                executorService.awaitTermination(10, TimeUnit.SECONDS);
-                resultSet.forEach(result::append);
-                System.out.println(result);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            long start = System.currentTimeMillis();
+            Set<Integer> hits = trie.hits(query);
+            ConcurrentSkipListSet<ResultEntry> resultSet = getResultSet(hits, query, columnIndex);
+            print(resultSet,start);
         }
 
     }
 
-    @Override
-    public void run() {
+    private ConcurrentSkipListSet<ResultEntry> getResultSet(Set<Integer> hits, String query, int columnIndex) {
+        ConcurrentSkipListSet<ResultEntry> resultSet;
+        if (trie.isNumberTypeTrie()) {
+            resultSet = new ConcurrentSkipListSet<>(new ResultEntry.NumberTypeComparator());
+        } else {
+            resultSet = new ConcurrentSkipListSet<>();
+        }
+        try {
+            ExecutorService executorService = Executors.newCachedThreadPool();
 
+            for (Integer offset : hits) {
+                executorService.submit(() -> {
+                    String line = parser.parseLine(offset);
+                    String word = line.split(",")[columnIndex];
+                    if (query.length() <= trie.getMaxDepth() || word.startsWith(query)) {
+                        resultSet.add(new ResultEntry(word, line));
+                    }
+                });
+            }
+            executorService.shutdown();
+            //noinspection ResultOfMethodCallIgnored
+            executorService.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return resultSet;
     }
 }
