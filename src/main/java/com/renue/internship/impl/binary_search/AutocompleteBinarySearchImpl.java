@@ -5,6 +5,8 @@ import com.renue.internship.common.ResultEntry;
 import com.renue.internship.common.Parser;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.renue.internship.util.IOUtils.print;
 
@@ -111,13 +113,14 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
         if (pointerCouple.getStart() > pointerCouple.getEnd()) {
             return Collections.emptyList();
         }
-        List<ResultEntry> resultEntries = new ArrayList<>();
-        for (int i = pointerCouple.getStart(); i < pointerCouple.getEnd(); i++) {
-            ColumnEntry columnEntry = keywordEntries.get(i);
-            if (columnEntry.getCell().startsWith(query)) {
-                resultEntries.add(new ResultEntry(columnEntry.getCell(), parser.parseLine(columnEntry.getBytesBeforeRow())));
-            }
-        }
+
+        List<ResultEntry> resultEntries = IntStream.range(pointerCouple.getStart(),pointerCouple.getEnd())
+                .parallel()
+                .mapToObj(keywordEntries::get)
+                .filter(columnEntry -> columnEntry.getCell().startsWith(query))
+                .map(columnEntry -> new ResultEntry(columnEntry.getCell(), parser.parseLine(columnEntry.getBytesBeforeRow())))
+                .collect(Collectors.toCollection(LinkedList::new));
+
         if (useCache) {
             cache.put(query, resultEntries);
         }

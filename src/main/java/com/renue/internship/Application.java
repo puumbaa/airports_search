@@ -21,7 +21,7 @@ public class Application {
 
         System.out.println("Выберите реализацию:\n" +
                 "1. Префиксное дерево\n" +
-                "2. Бинарный поиск с кешированием\n");
+                "2. Бинарный поиск с кешированием");
 
         Scanner sc = new Scanner(System.in);
         String query = sc.next();
