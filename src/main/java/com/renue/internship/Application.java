@@ -3,15 +3,15 @@ package com.renue.internship;
 import com.renue.internship.common.AutoComplete;
 import com.renue.internship.common.Parser;
 import com.renue.internship.impl.binary_search.AutocompleteBinarySearchImpl;
-import com.renue.internship.impl.binary_search.ColumnEntry;
 import com.renue.internship.impl.binary_search.ColumnEntryListParser;
+import com.renue.internship.impl.binary_search.KeywordsList;
 import com.renue.internship.impl.trie.AutoCompleteTrieImpl;
 import com.renue.internship.impl.trie.Trie;
 import com.renue.internship.impl.trie.TrieParser;
 
 import java.util.*;
 
-import static com.renue.internship.util.IOUtils.getColumnIndex;
+import static com.renue.internship.util.IOUtils.parseColumnIndex;
 
 public class Application {
     private static final String FILE_NAME = "airports.csv";
@@ -33,9 +33,9 @@ public class Application {
             Parser<Trie> parser = new TrieParser(FILE_NAME);
             autoComplete = new AutoCompleteTrieImpl(parser, 4);
         } else {
-            Parser<List<ColumnEntry>> parser = new ColumnEntryListParser(FILE_NAME);
+            Parser<KeywordsList> parser = new ColumnEntryListParser(FILE_NAME);
             autoComplete = new AutocompleteBinarySearchImpl(parser, true);
         }
-        autoComplete.run(getColumnIndex(args));
+        autoComplete.run(parseColumnIndex(args));
     }
 }

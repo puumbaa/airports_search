@@ -3,10 +3,6 @@ package com.renue.internship.impl.binary_search;
 import com.renue.internship.common.Parser;
 import org.junit.jupiter.api.*;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,31 +10,28 @@ import java.util.List;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DisplayName("ColumnEntryListParser is working")
 public class ColumnEntryListParserTest {
-    private final Parser<List<ColumnEntry>> parser = new ColumnEntryListParser(FILENAME);
+    private final Parser<KeywordsList> parser = new ColumnEntryListParser(FILENAME);
     private static final String FILENAME = "airports-test.csv";
 
     @Test
     public void parse_column() {
-        List<ColumnEntry> expected = Arrays.asList(
-                new ColumnEntry("goroka airport", 0),
-                new ColumnEntry("madang airport", 152),
-                new ColumnEntry("mount hagen kagamuga airport", 298),
-                new ColumnEntry("nadzab airport", 474),
-                new ColumnEntry("port moresby jacksons international airport", 613),
-                new ColumnEntry("wewak international airport", 804),
-                new ColumnEntry("narsarsuaq airport", 962),
-                new ColumnEntry("godthaab / nuuk airport", 1107),
-                new ColumnEntry("kangerlussuaq airport", 1251),
-                new ColumnEntry("thule air base", 1398),
-                new ColumnEntry("egilsstaðir airport", 1531),
-                new ColumnEntry("aguenar – hadj bey akhamok airport", 1685),
-                new ColumnEntry("hornafjörður airport", 1845)
-        );
-        List<ColumnEntry> actual = new ArrayList<>();
+        KeywordsList expected = new KeywordsList(Arrays.asList(
+                new KeywordsList.KeywordEntry("goroka airport", 0),
+                new KeywordsList.KeywordEntry("madang airport", 152),
+                new KeywordsList.KeywordEntry("mount hagen kagamuga airport", 298),
+                new KeywordsList.KeywordEntry("nadzab airport", 474),
+                new KeywordsList.KeywordEntry("port moresby jacksons international airport", 613),
+                new KeywordsList.KeywordEntry("wewak international airport", 804),
+                new KeywordsList.KeywordEntry("narsarsuaq airport", 962),
+                new KeywordsList.KeywordEntry("godthaab / nuuk airport", 1107),
+                new KeywordsList.KeywordEntry("kangerlussuaq airport", 1251),
+                new KeywordsList.KeywordEntry("thule air base", 1398),
+                new KeywordsList.KeywordEntry("egilsstaðir airport", 1531),
+                new KeywordsList.KeywordEntry("aguenar – hadj bey akhamok airport", 1685),
+                new KeywordsList.KeywordEntry("hornafjörður airport", 1845)
+        ));
+        KeywordsList actual = new KeywordsList(new ArrayList<>());
         parser.parseColumn(1, actual);
-        System.out.println(actual.equals(expected));
-        System.out.println(actual);
-        System.out.println(expected);
         Assertions.assertEquals(expected, actual);
     }
 

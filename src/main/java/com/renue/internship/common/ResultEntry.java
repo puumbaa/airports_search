@@ -1,10 +1,24 @@
 package com.renue.internship.common;
 
 import java.util.Comparator;
+import java.util.Objects;
 
-public class ResultEntry implements Comparable<ResultEntry>{
+public class ResultEntry implements Comparable<ResultEntry> {
     public String getWord() {
         return word;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResultEntry that = (ResultEntry) o;
+        return Objects.equals(word, that.word) && Objects.equals(line, that.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(word, line);
     }
 
     private final String word;
@@ -36,7 +50,7 @@ public class ResultEntry implements Comparable<ResultEntry>{
         }
     }
 
-    public static class StringTypeComparator implements Comparator<ResultEntry>{
+    public static class StringTypeComparator implements Comparator<ResultEntry> {
 
         @Override
         public int compare(ResultEntry o1, ResultEntry o2) {

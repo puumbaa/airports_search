@@ -5,14 +5,21 @@ import com.renue.internship.common.ResultEntry;
 import java.util.Collection;
 
 public class IOUtils {
+    private static int columnIndex;
+
     private IOUtils() {
     }
 
-    public static int getColumnIndex(String[] args) {
+    public static int getColumnIndex() {
+        return columnIndex;
+    }
+
+    public static int parseColumnIndex(String[] args) {
         if (args.length == 0) {
             throw new IllegalStateException("Не указан номер столбца. Проверьте аргменты запуска");
         }
-        return Integer.parseInt(args[0]) - 1;
+        columnIndex = Integer.parseInt(args[0]) - 1;
+        return columnIndex;
     }
 
     public static void print(Collection<ResultEntry> resultSet, long startTime) {

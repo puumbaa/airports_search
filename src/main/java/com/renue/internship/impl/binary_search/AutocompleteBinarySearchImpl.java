@@ -1,46 +1,57 @@
 package com.renue.internship.impl.binary_search;
 
 import com.renue.internship.common.AutoComplete;
-import com.renue.internship.common.ResultEntry;
 import com.renue.internship.common.Parser;
+import com.renue.internship.common.ResultEntry;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.renue.internship.util.IOUtils.getColumnIndex;
 import static com.renue.internship.util.IOUtils.print;
 
 public class AutocompleteBinarySearchImpl implements AutoComplete {
 
-    private final Parser<List<ColumnEntry>> parser;
-    private final List<ColumnEntry> keywordEntries;
+    private final Parser<KeywordsList> parser;
 
-    private Map<String, List<ResultEntry>> cache;
+    private final Map<String, List<ResultEntry>> cache;
 
+    private final KeywordsList keywordsList;
     private final boolean useCache;
 
     private static final int CACHE_MAX_SIZE = 10;
 
+    private List<ResultEntry> resultSet;
 
-    public AutocompleteBinarySearchImpl(Parser<List<ColumnEntry>> parser, boolean useCache) {
+    public AutocompleteBinarySearchImpl(Parser<KeywordsList> parser, boolean useCache) {
         if (parser == null) {
             throw new IllegalStateException("Парсер должен быть задан");
         }
         this.useCache = useCache;
-        if (useCache) {
-            cache = new HashMap<>();
-        }
         this.parser = parser;
-        this.keywordEntries = new ArrayList<>();
+        this.keywordsList = new KeywordsList(new ArrayList<>());
+        cache = useCache ? new HashMap<>() : null;
     }
+
+    public AutocompleteBinarySearchImpl(Parser<KeywordsList> parser, KeywordsList keywordsList, boolean useCache) {
+        if (parser == null) {
+            throw new IllegalStateException("Парсер должен быть задан");
+        }
+        this.useCache = useCache;
+        this.parser = parser;
+        this.keywordsList = keywordsList;
+        cache = useCache ? new HashMap<>() : null;
+    }
+
     public void run(int columnIndex) {
         parse(columnIndex);
-        sort();
+        keywordsList.sort();
         start();
     }
 
     private void parse(int columnIndex) {
-        parser.parseColumn(columnIndex, keywordEntries);
+        parser.parseColumn(columnIndex, keywordsList);
     }
 
     private void start() {
@@ -51,15 +62,11 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
             if (query.equals("!quit")) {
                 break;
             }
-
             long startTime = System.currentTimeMillis();
-
-            List<ResultEntry> resultSet;
             if (useCache) {
                 resultSet = searchInCache(query);
             } else {
-                PointerCouple pointerCouple = reduceSearchLimits(query, keywordEntries);
-                resultSet = findMatches(pointerCouple, query);
+                resultSet = getResultSet(query);
             }
             print(resultSet, startTime);
             if (useCache && cache.size() > CACHE_MAX_SIZE) {
@@ -68,32 +75,30 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
         }
     }
 
+    private List<ResultEntry> getResultSet(String query) {
+        PointerCouple pointerCouple = reduceSearchLimits(query, keywordsList);
+        return findMatches(pointerCouple, query);
+    }
+
     private List<ResultEntry> searchInCache(String query) {
-        List<ResultEntry> resultSet = cache.get(query);
+        resultSet = cache.get(query);
         if (resultSet == null) {
-            PointerCouple pointerCouple = reduceSearchLimits(query, keywordEntries);
-            resultSet = findMatches(pointerCouple, query);
+            resultSet = getResultSet(query);
         }
         return resultSet;
     }
 
-    private void sort() {
-        if (!keywordEntries.isEmpty() && keywordEntries.get(0).getCell().matches("[0-9]+")) {
-            keywordEntries.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCell())));
-        } else {
-            keywordEntries.sort(Comparator.comparing(ColumnEntry::getCell));
-        }
-    }
 
 
-    private PointerCouple reduceSearchLimits(String query, List<ColumnEntry> keywordEntries) {
+    private PointerCouple reduceSearchLimits(String query, KeywordsList keywordsList) {
+        List<KeywordsList.KeywordEntry> keywords = keywordsList.getKeywords();
         int startIndex = 0;
-        int endIndex = keywordEntries.size() - 1;
+        int endIndex = keywords.size() - 1;
 
         for (int i = 0; i < query.length(); i++) {
             while (startIndex <= endIndex) {
                 int target = startIndex + ((endIndex - startIndex) / 2);
-                String keyword = keywordEntries.get(target).getCell();
+                String keyword = keywords.get(target).getCell();
                 boolean haveSamePrefixes = keyword.startsWith(query.substring(0, i));
                 if (keyword.length() <= i || keyword.charAt(i) < query.charAt(i) && haveSamePrefixes) {
                     startIndex = target + 1;
@@ -111,12 +116,15 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
         if (pointerCouple.getStart() > pointerCouple.getEnd()) {
             return Collections.emptyList();
         }
-
-        List<ResultEntry> resultEntries = IntStream.range(pointerCouple.getStart(),pointerCouple.getEnd())
+        List<ResultEntry> resultEntries = IntStream.range(pointerCouple.getStart(), pointerCouple.getEnd() + 1)
                 .parallel()
-                .mapToObj(keywordEntries::get)
+                .mapToObj(keywordsList.getKeywords()::get)
                 .filter(columnEntry -> columnEntry.getCell().startsWith(query))
-                .map(columnEntry -> new ResultEntry(columnEntry.getCell(), parser.parseLine(columnEntry.getBytesBeforeRow())))
+                .map(columnEntry -> {
+                    String line = parser.parseLine(columnEntry.getBytesBeforeRow());
+                    String word = line.split(",")[getColumnIndex()];
+                    return new ResultEntry(word, line);
+                })
                 .collect(Collectors.toCollection(LinkedList::new));
 
         if (useCache) {
@@ -142,6 +150,4 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
             this.end = end;
         }
     }
-
-
 }
