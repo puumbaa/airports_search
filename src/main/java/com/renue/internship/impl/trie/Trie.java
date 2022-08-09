@@ -6,12 +6,12 @@ import java.util.*;
 public class Trie {
     private final Node root;
 
-    public int getMaxDepth() {
-        return maxDepth;
+    public int getDepth() {
+        return depth;
     }
 
-    private final int maxDepth;
-
+    private final int depth;
+    private static final int MAX_DEPTH = 4;
     private boolean isNumberTypeTrie;
 
     public boolean isNumberTypeTrie() {
@@ -22,14 +22,29 @@ public class Trie {
         isNumberTypeTrie = numberTypeTrie;
     }
 
-    public Trie(int maxDepth) {
+    public Trie(int depth) {
+        validateDepth(depth);
         this.root = new Node('\0');
-        this.maxDepth = maxDepth;
+        this.depth = depth;
+    }
+
+    public Trie(Node root, int depth) {
+        validateDepth(depth);
+        this.root = root;
+        this.depth = depth;
+    }
+
+    private static void validateDepth(int depth) {
+        if (depth < 1 || depth > MAX_DEPTH) {
+            throw new IllegalArgumentException(
+                    String.format("Максимальная глубина должна быть в промежутке от 1 до %d", MAX_DEPTH)
+            );
+        }
     }
 
     public void insert(String word, int offset) {
         Node root = this.root;
-        int bound = Math.min(word.length(), maxDepth);
+        int bound = Math.min(word.length(), depth);
         for (int i = 0; i < bound; i++) {
             Node node = root.children.get(word.charAt(i));
             if (node != null) {
@@ -43,10 +58,14 @@ public class Trie {
         }
     }
 
+    public void clear() {
+        root.children.clear();
+    }
+
 
     public Set<Integer> hits(String prefix) {
         Node currentNode = this.root;
-        int bound = Math.min(prefix.length(), maxDepth);
+        int bound = Math.min(prefix.length(), depth);
         for (int i = 0; i < bound; i++) {
             Node nextNode = currentNode.children.get(prefix.charAt(i));
             if (nextNode == null) {
@@ -58,7 +77,29 @@ public class Trie {
         return currentNode.offsets;
     }
 
-    private static class Node {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Trie trie = (Trie) o;
+        return depth == trie.depth && isNumberTypeTrie == trie.isNumberTypeTrie && Objects.equals(root, trie.root);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(root, depth, isNumberTypeTrie);
+    }
+
+    @Override
+    public String toString() {
+        return "Trie{" +
+                "root=" + root +
+                ", depth=" + depth +
+                ", isNumberTypeTrie=" + isNumberTypeTrie +
+                '}';
+    }
+
+    public static class Node {
         private final char c;
         private final Map<Character, Node> children;
         private final Set<Integer> offsets;
@@ -69,9 +110,37 @@ public class Trie {
             offsets = new HashSet<>();
         }
 
-        public Node(char c, Integer lineNumber) {
+        public Node(char c, Integer offset) {
             this(c);
-            offsets.add(lineNumber);
+            offsets.add(offset);
+        }
+
+        public Node(char c, Map<Character, Node> children) {
+            this.c = c;
+            this.children = children;
+            this.offsets = new HashSet<>();
+        }
+
+        public Node(char c, Map<Character, Node> children, Integer offset) {
+            this.c = c;
+            this.offsets = new HashSet<>();
+            this.children = children;
+            offsets.add(offset);
+        }
+
+        public Node(char c, Map<Character, Node> children, Set<Integer> offsets) {
+            this.c = c;
+            this.children = children;
+            this.offsets = offsets;
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "c=" + c +
+                    ", children=" + children +
+                    ", offsets=" + offsets +
+                    '}';
         }
 
         @Override

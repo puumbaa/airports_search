@@ -9,8 +9,7 @@ import com.renue.internship.impl.trie.AutoCompleteTrieImpl;
 import com.renue.internship.impl.trie.Trie;
 import com.renue.internship.impl.trie.TrieParser;
 
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static com.renue.internship.util.IOUtils.getColumnIndex;
 
@@ -18,7 +17,6 @@ public class Application {
     private static final String FILE_NAME = "airports.csv";
 
     public static void main(String[] args) {
-
         System.out.println("Выберите реализацию:\n" +
                 "1. Префиксное дерево\n" +
                 "2. Бинарный поиск с кешированием");

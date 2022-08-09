@@ -5,7 +5,10 @@ import com.renue.internship.common.AutoComplete;
 import com.renue.internship.common.Parser;
 import com.renue.internship.common.ResultEntry;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.renue.internship.util.IOUtils.print;
@@ -18,9 +21,6 @@ public class AutoCompleteTrieImpl implements AutoComplete {
 
 
     public AutoCompleteTrieImpl(Parser<Trie> parser, int maxDepth) {
-        if (maxDepth < 1 || maxDepth > 4) {
-            throw new IllegalArgumentException("Максимальная глубина должна быть в промежутке от 1 до 4");
-        }
         if (parser == null) {
             throw new IllegalStateException("Парсер должен быть задан");
         }
@@ -33,6 +33,7 @@ public class AutoCompleteTrieImpl implements AutoComplete {
         parse(columnIndex);
         start(columnIndex);
     }
+
 
     private void start(int columnIndex) {
         Scanner sc = new Scanner(System.in);
@@ -61,12 +62,15 @@ public class AutoCompleteTrieImpl implements AutoComplete {
                     String word = line.split(",")[columnIndex];
                     return new ResultEntry(word, line);
                 })
-                .filter(resultEntry ->
-                        query.length() < trie.getMaxDepth() ||
-                                resultEntry.getWord().startsWith(query))
-                .sorted(trie.isNumberTypeTrie() ?
-                        new ResultEntry.NumberTypeComparator() :
-                        new ResultEntry.StringTypeComparator())
+                .filter(
+                        resultEntry -> query.length() < trie.getDepth() ||
+                                resultEntry.getWord().startsWith(query)
+                )
+                .sorted(
+                        trie.isNumberTypeTrie() ?
+                                new ResultEntry.NumberTypeComparator() :
+                                new ResultEntry.StringTypeComparator()
+                )
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 }

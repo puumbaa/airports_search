@@ -33,8 +33,6 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
         this.parser = parser;
         this.keywordEntries = new ArrayList<>();
     }
-
-
     public void run(int columnIndex) {
         parse(columnIndex);
         sort();
