@@ -25,6 +25,10 @@ public class KeywordsListParser extends Parser<KeywordsList> {
             long offset = 0;
             while (currentLine != null) {
                 String word = getCell(columnIndex, currentLine, true);
+                if (word.equals("\\n")) {
+                    currentLine = reader.readLine();
+                    continue;
+                }
                 list.add(new KeywordsList.KeywordEntry(word, offset));
                 column.add(word);
 

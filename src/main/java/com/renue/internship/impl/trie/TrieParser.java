@@ -24,6 +24,10 @@ public class TrieParser extends Parser<Trie> {
             int offset = 0;
             while (currentLine != null){
                 String word = Parser.getCell(columnIndex,currentLine,true);
+                if (word.equals("\\n")) {
+                    currentLine = reader.readLine();
+                    continue;
+                }
                 destination.insert(word, offset);
                 column.add(word);
 
