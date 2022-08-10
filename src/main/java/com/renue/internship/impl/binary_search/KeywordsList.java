@@ -102,7 +102,7 @@ public class KeywordsList {
                     keywords.sort(Comparator.comparingInt(keywordEntry -> Integer.parseInt(keywordEntry.getCell())));
                     break;
                 case DOUBLE:
-                    keywords.sort(Comparator.comparingDouble(keywordEntry -> Integer.parseInt(keywordEntry.getCell())));
+                    keywords.sort(Comparator.comparingDouble(keywordEntry -> Double.parseDouble(keywordEntry.getCell())));
                     break;
                 case STRING:
                     keywords.sort(Comparator.comparing(KeywordsList.KeywordEntry::getCell));
