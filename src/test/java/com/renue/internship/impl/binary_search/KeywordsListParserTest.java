@@ -42,18 +42,18 @@ public class KeywordsListParserTest {
     public void parse_column() {
         KeywordsList expected = new KeywordsList(Arrays.asList(
                 new KeywordsList.KeywordEntry("goroka airport", 0),
-                new KeywordsList.KeywordEntry("madang airport", 152),
-                new KeywordsList.KeywordEntry("mount hagen kagamuga airport", 298),
-                new KeywordsList.KeywordEntry("nadzab airport", 474),
-                new KeywordsList.KeywordEntry("port moresby jacksons international airport", 613),
-                new KeywordsList.KeywordEntry("wewak international airport", 804),
-                new KeywordsList.KeywordEntry("narsarsuaq airport", 962),
-                new KeywordsList.KeywordEntry("godthaab / nuuk airport", 1107),
-                new KeywordsList.KeywordEntry("kangerlussuaq airport", 1251),
-                new KeywordsList.KeywordEntry("thule air base", 1398),
-                new KeywordsList.KeywordEntry("egilsstaðir airport", 1531),
-                new KeywordsList.KeywordEntry("aguenar – hadj bey akhamok airport", 1685),
-                new KeywordsList.KeywordEntry("hornafjörður airport", 1845)
+                new KeywordsList.KeywordEntry("madang airport", 153),
+                new KeywordsList.KeywordEntry("mount hagen kagamuga airport", 300),
+                new KeywordsList.KeywordEntry("nadzab airport", 477),
+                new KeywordsList.KeywordEntry("port moresby jacksons international airport", 617),
+                new KeywordsList.KeywordEntry("wewak international airport", 809),
+                new KeywordsList.KeywordEntry("narsarsuaq airport", 968),
+                new KeywordsList.KeywordEntry("godthaab / nuuk airport", 1114),
+                new KeywordsList.KeywordEntry("kangerlussuaq airport", 1259),
+                new KeywordsList.KeywordEntry("thule air base", 1407),
+                new KeywordsList.KeywordEntry("egilsstaðir airport", 1541),
+                new KeywordsList.KeywordEntry("aguenar – hadj bey akhamok airport", 1696),
+                new KeywordsList.KeywordEntry("hornafjörður airport", 1857)
         ));
         expected.setType(Type.STRING);
         KeywordsList actual = new KeywordsList(new ArrayList<>());
