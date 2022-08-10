@@ -1,9 +1,8 @@
 package com.renue.internship.common;
 
-import java.util.Comparator;
 import java.util.Objects;
 
-public class ResultEntry implements Comparable<ResultEntry> {
+public class ResultEntry {
     public String getWord() {
         return word;
     }
@@ -29,6 +28,11 @@ public class ResultEntry implements Comparable<ResultEntry> {
         this.line = line;
     }
 
+    public static ResultEntry from(String line, int columnIndex) {
+        return new ResultEntry(Parser.getCell(columnIndex, line, false), line);
+    }
+
+
     @Override
     public String toString() {
         return word + "[" + line + "]\n";
@@ -38,23 +42,4 @@ public class ResultEntry implements Comparable<ResultEntry> {
         return line;
     }
 
-    @Override
-    public int compareTo(ResultEntry o) {
-        return word.compareTo(o.word);
-    }
-
-    public static class NumberTypeComparator implements Comparator<ResultEntry> {
-        @Override
-        public int compare(ResultEntry o1, ResultEntry o2) {
-            return Integer.parseInt(o1.word) - Integer.parseInt(o2.word);
-        }
-    }
-
-    public static class StringTypeComparator implements Comparator<ResultEntry> {
-
-        @Override
-        public int compare(ResultEntry o1, ResultEntry o2) {
-            return o1.word.compareTo(o2.word);
-        }
-    }
 }

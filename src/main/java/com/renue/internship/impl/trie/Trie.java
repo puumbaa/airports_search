@@ -1,6 +1,9 @@
 package com.renue.internship.impl.trie;
 
 
+import com.renue.internship.common.ResultEntry;
+import com.renue.internship.common.Type;
+
 import java.util.*;
 
 public class Trie {
@@ -12,15 +15,9 @@ public class Trie {
 
     private final int depth;
     private static final int MAX_DEPTH = 4;
-    private boolean isNumberTypeTrie;
+    private Type type;
 
-    public boolean isNumberTypeTrie() {
-        return isNumberTypeTrie;
-    }
 
-    public void setNumberTypeTrie(boolean numberTypeTrie) {
-        isNumberTypeTrie = numberTypeTrie;
-    }
 
     public Trie(int depth) {
         validateDepth(depth);
@@ -28,10 +25,15 @@ public class Trie {
         this.depth = depth;
     }
 
-    public Trie(Node root, int depth) {
+    public Trie(Node root, int depth, Type type) {
         validateDepth(depth);
         this.root = root;
         this.depth = depth;
+        this.type = type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     private static void validateDepth(int depth) {
@@ -63,6 +65,7 @@ public class Trie {
     }
 
 
+
     public Set<Integer> hits(String prefix) {
         Node currentNode = this.root;
         int bound = Math.min(prefix.length(), depth);
@@ -82,12 +85,12 @@ public class Trie {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Trie trie = (Trie) o;
-        return depth == trie.depth && isNumberTypeTrie == trie.isNumberTypeTrie && Objects.equals(root, trie.root);
+        return depth == trie.depth && type.equals(trie.type) && Objects.equals(root, trie.root);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(root, depth, isNumberTypeTrie);
+        return Objects.hash(root, depth, type);
     }
 
     @Override
@@ -95,8 +98,17 @@ public class Trie {
         return "Trie{" +
                 "root=" + root +
                 ", depth=" + depth +
-                ", isNumberTypeTrie=" + isNumberTypeTrie +
+                ", isNumberTypeTrie=" + type +
                 '}';
+    }
+
+    public Comparator<? super ResultEntry> getComparator() {
+        switch (type){
+            case INT: return Comparator.comparingInt(value -> Integer.parseInt(value.getWord()));
+            case DOUBLE: return Comparator.comparingDouble(value -> Double.parseDouble(value.getWord()));
+            case STRING: return Comparator.comparing(ResultEntry::getWord);
+            default: throw new UnsupportedOperationException();
+        }
     }
 
     public static class Node {

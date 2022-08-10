@@ -1,5 +1,6 @@
 package com.renue.internship.impl.trie;
 
+import com.renue.internship.common.Type;
 import org.junit.jupiter.api.*;
 
 import java.util.Collections;
@@ -13,6 +14,7 @@ public class TrieTest {
 
     @BeforeEach
     public void fill() {
+        trie.setType(Type.INT);
         trie.insert("12", 0);
         trie.insert("13", 100);
         trie.insert("1", 200);
@@ -38,7 +40,7 @@ public class TrieTest {
                                 '5', new Trie.Node('5', 300),
                                 '6', new Trie.Node('6', 400)),
                                 Set.of(300, 400, 500)))),
-                4);
+                4, Type.INT);
 
         Assertions.assertEquals(expected, trie);
     }

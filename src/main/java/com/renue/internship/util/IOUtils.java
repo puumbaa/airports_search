@@ -5,7 +5,10 @@ import com.renue.internship.common.ResultEntry;
 import java.util.Collection;
 
 public class IOUtils {
+
     private static int columnIndex;
+    private static final int MAX_COLUMN_INDEX = 14;
+    private static final int MIN_COLUMN_INDEX = 1;
 
     private IOUtils() {
     }
@@ -19,6 +22,11 @@ public class IOUtils {
             throw new IllegalStateException("Не указан номер столбца. Проверьте аргменты запуска");
         }
         columnIndex = Integer.parseInt(args[0]) - 1;
+        if (columnIndex < MIN_COLUMN_INDEX || columnIndex > MAX_COLUMN_INDEX) {
+            throw new IllegalArgumentException(
+                    String.format("Номер столбца должен быть от %d до %d", MIN_COLUMN_INDEX, MAX_COLUMN_INDEX)
+            );
+        }
         return columnIndex;
     }
 

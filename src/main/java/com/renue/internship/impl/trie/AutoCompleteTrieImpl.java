@@ -11,6 +11,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.renue.internship.common.ResultEntry.from;
 import static com.renue.internship.util.IOUtils.print;
 
 
@@ -57,20 +58,9 @@ public class AutoCompleteTrieImpl implements AutoComplete {
     private Queue<ResultEntry> getResultSet(Set<Integer> hits, String query, int columnIndex) {
         return hits.stream()
                 .parallel()
-                .map(offset -> {
-                    String line = parser.parseLine(offset);
-                    String word = line.split(",")[columnIndex];
-                    return new ResultEntry(word, line);
-                })
-                .filter(
-                        resultEntry -> query.length() < trie.getDepth() ||
-                                resultEntry.getWord().startsWith(query)
-                )
-                .sorted(
-                        trie.isNumberTypeTrie() ?
-                                new ResultEntry.NumberTypeComparator() :
-                                new ResultEntry.StringTypeComparator()
-                )
+                .map(offset -> from(parser.parseLine(offset), columnIndex))
+                .filter(resultEntry -> query.length() < trie.getDepth() || resultEntry.getWord().startsWith(query))
+                .sorted(trie.getComparator())
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 }

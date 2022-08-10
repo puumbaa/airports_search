@@ -7,9 +7,21 @@ import java.util.List;
 import java.util.Objects;
 
 public class KeywordsList {
-
     public KeywordsList(List<KeywordEntry> keywords) {
         this.keywords = keywords;
+    }
+
+    @Override
+    public String toString() {
+        return "KeywordsList{" +
+                "keywords=" + keywords +
+                ", type=" + type +
+                '}';
+    }
+
+    public KeywordsList(List<KeywordEntry> keywords, Type type) {
+        this.keywords = keywords;
+        this.type = type;
     }
 
     private final List<KeywordEntry> keywords;
@@ -21,6 +33,19 @@ public class KeywordsList {
 
     public void add(KeywordEntry keywordEntry) {
         keywords.add(keywordEntry);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        KeywordsList that = (KeywordsList) o;
+        return Objects.equals(keywords, that.keywords) && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(keywords, type);
     }
 
     public Type getType() {
@@ -75,10 +100,13 @@ public class KeywordsList {
             switch (type) {
                 case INT:
                     keywords.sort(Comparator.comparingInt(keywordEntry -> Integer.parseInt(keywordEntry.getCell())));
+                    break;
                 case DOUBLE:
                     keywords.sort(Comparator.comparingDouble(keywordEntry -> Integer.parseInt(keywordEntry.getCell())));
+                    break;
                 case STRING:
                     keywords.sort(Comparator.comparing(KeywordsList.KeywordEntry::getCell));
+                    break;
             }
         }
     }

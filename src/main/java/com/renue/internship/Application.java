@@ -3,20 +3,21 @@ package com.renue.internship;
 import com.renue.internship.common.AutoComplete;
 import com.renue.internship.common.Parser;
 import com.renue.internship.impl.binary_search.AutocompleteBinarySearchImpl;
-import com.renue.internship.impl.binary_search.ColumnEntryListParser;
+import com.renue.internship.impl.binary_search.KeywordsListParser;
 import com.renue.internship.impl.binary_search.KeywordsList;
 import com.renue.internship.impl.trie.AutoCompleteTrieImpl;
 import com.renue.internship.impl.trie.Trie;
 import com.renue.internship.impl.trie.TrieParser;
 
-import java.util.*;
+import java.util.Scanner;
 
 import static com.renue.internship.util.IOUtils.parseColumnIndex;
 
 public class Application {
-    private static final String FILE_NAME = "airports.csv";
+    private static final String FILE_NAME = "..\\airports.csv";
 
     public static void main(String[] args) {
+        parseColumnIndex(args);
         System.out.println("Выберите реализацию:\n" +
                 "1. Префиксное дерево\n" +
                 "2. Бинарный поиск с кешированием");
@@ -33,7 +34,7 @@ public class Application {
             Parser<Trie> parser = new TrieParser(FILE_NAME);
             autoComplete = new AutoCompleteTrieImpl(parser, 4);
         } else {
-            Parser<KeywordsList> parser = new ColumnEntryListParser(FILE_NAME);
+            Parser<KeywordsList> parser = new KeywordsListParser(FILE_NAME);
             autoComplete = new AutocompleteBinarySearchImpl(parser, true);
         }
         autoComplete.run(parseColumnIndex(args));

@@ -1,16 +1,16 @@
 package com.renue.internship.impl.binary_search;
 
 import com.renue.internship.common.Parser;
+import com.renue.internship.common.Type;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DisplayName("ColumnEntryListParser is working")
-public class ColumnEntryListParserTest {
-    private final Parser<KeywordsList> parser = new ColumnEntryListParser(FILENAME);
+public class KeywordsListParserTest {
+    private final Parser<KeywordsList> parser = new KeywordsListParser(FILENAME);
     private static final String FILENAME = "airports-test.csv";
 
     @Test
@@ -30,6 +30,7 @@ public class ColumnEntryListParserTest {
                 new KeywordsList.KeywordEntry("aguenar – hadj bey akhamok airport", 1685),
                 new KeywordsList.KeywordEntry("hornafjörður airport", 1845)
         ));
+        expected.setType(Type.STRING);
         KeywordsList actual = new KeywordsList(new ArrayList<>());
         parser.parseColumn(1, actual);
         Assertions.assertEquals(expected, actual);

@@ -1,10 +1,11 @@
 package com.renue.internship.impl.trie;
 
 import com.renue.internship.common.Parser;
+import com.renue.internship.common.Type;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class TrieParser extends Parser<Trie> {
 
@@ -15,21 +16,12 @@ public class TrieParser extends Parser<Trie> {
     @Override
     public void parseColumn(int columnIndex, Trie destination) {
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream()))) {
-
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileAbsolutePath))) {
             String currentLine = reader.readLine();
-            destination.setNumberTypeTrie(
-                    currentLine
-                            .split(",")[columnIndex]
-                            .matches("[0-9]+")
-            );
-
+            destination.setType(Type.get(getCell(columnIndex, currentLine, true)));
             int offset = 0;
-            for (int i = 0; currentLine != null; i++, currentLine = reader.readLine()) {
-                String word = currentLine
-                        .split(",")[columnIndex]
-                        .replaceAll("\"", "")
-                        .toLowerCase();
+            while (currentLine != null){
+                String word = Parser.getCell(columnIndex,currentLine,true);
                 destination.insert(word, offset);
 
                 long notOneByteCharactersCount = 0;
@@ -37,6 +29,7 @@ public class TrieParser extends Parser<Trie> {
                     notOneByteCharactersCount += String.valueOf(currentLine.charAt(j)).getBytes().length - 1;
                 }
                 offset += currentLine.length() + notOneByteCharactersCount + 1;
+                currentLine = reader.readLine();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

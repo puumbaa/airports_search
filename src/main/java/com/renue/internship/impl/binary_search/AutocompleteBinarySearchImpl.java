@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.renue.internship.common.ResultEntry.from;
 import static com.renue.internship.util.IOUtils.getColumnIndex;
 import static com.renue.internship.util.IOUtils.print;
 
@@ -89,7 +90,6 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
     }
 
 
-
     private PointerCouple reduceSearchLimits(String query, KeywordsList keywordsList) {
         List<KeywordsList.KeywordEntry> keywords = keywordsList.getKeywords();
         int startIndex = 0;
@@ -116,16 +116,13 @@ public class AutocompleteBinarySearchImpl implements AutoComplete {
         if (pointerCouple.getStart() > pointerCouple.getEnd()) {
             return Collections.emptyList();
         }
-        List<ResultEntry> resultEntries = IntStream.range(pointerCouple.getStart(), pointerCouple.getEnd() + 1)
-                .parallel()
-                .mapToObj(keywordsList.getKeywords()::get)
-                .filter(columnEntry -> columnEntry.getCell().startsWith(query))
-                .map(columnEntry -> {
-                    String line = parser.parseLine(columnEntry.getBytesBeforeRow());
-                    String word = line.split(",")[getColumnIndex()];
-                    return new ResultEntry(word, line);
-                })
-                .collect(Collectors.toCollection(LinkedList::new));
+        List<ResultEntry> resultEntries =
+                IntStream.range(pointerCouple.getStart(), pointerCouple.getEnd() + 1)
+                        .parallel()
+                        .mapToObj(keywordsList.getKeywords()::get)
+                        .filter(columnEntry -> columnEntry.getCell().startsWith(query))
+                        .map(columnEntry -> from(parser.parseLine(columnEntry.getBytesBeforeRow()), getColumnIndex()))
+                        .collect(Collectors.toCollection(LinkedList::new));
 
         if (useCache) {
             cache.put(query, resultEntries);

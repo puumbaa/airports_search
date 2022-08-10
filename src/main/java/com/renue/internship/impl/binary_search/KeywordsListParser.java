@@ -1,37 +1,35 @@
 package com.renue.internship.impl.binary_search;
 
 import com.renue.internship.common.Parser;
+import com.renue.internship.common.Type;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 
-public class ColumnEntryListParser extends Parser<KeywordsList> {
+public class KeywordsListParser extends Parser<KeywordsList> {
 
-    public ColumnEntryListParser(String filename) {
+    public KeywordsListParser(String filename) {
         super(filename);
     }
 
     public void parseColumn(int columnIndex, KeywordsList list) {
-        long offset = 0;
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream()))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileAbsolutePath))) {
             String currentLine = reader.readLine();
-            String cell = getCell(columnIndex, currentLine);
+            list.setType(Type.get(getCell(columnIndex, currentLine, true)));
+            long offset = 0;
             while (currentLine != null) {
-                list.add(new KeywordsList.KeywordEntry(cell, offset));
+                String word = getCell(columnIndex, currentLine, true);
+                list.add(new KeywordsList.KeywordEntry(word, offset));
 
                 long notOneByteCharactersCount = 0;
                 for (int j = 0; j < currentLine.length(); j++) {
                     notOneByteCharactersCount += String.valueOf(currentLine.charAt(j)).getBytes().length - 1;
                 }
                 offset += currentLine.length() + notOneByteCharactersCount + 1;
-
                 currentLine = reader.readLine();
-                if (currentLine != null) {
-                    cell = getCell(columnIndex, currentLine);
-                }
             }
 
         } catch (IOException e) {
