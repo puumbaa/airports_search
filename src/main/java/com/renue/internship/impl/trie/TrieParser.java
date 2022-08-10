@@ -35,7 +35,7 @@ public class TrieParser extends Parser<Trie> {
                 for (int j = 0; j < currentLine.length(); j++) {
                     notOneByteCharactersCount += String.valueOf(currentLine.charAt(j)).getBytes().length - 1;
                 }
-                offset += currentLine.length() + notOneByteCharactersCount + 1;
+                offset += currentLine.length() + notOneByteCharactersCount + System.lineSeparator().length();
                 currentLine = reader.readLine();
             }
             destination.setType(Type.get(column));
