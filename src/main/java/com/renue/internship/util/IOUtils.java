@@ -7,8 +7,8 @@ import java.util.Collection;
 public class IOUtils {
 
     private static int columnIndex;
-    private static final int MAX_COLUMN_INDEX = 14;
-    private static final int MIN_COLUMN_INDEX = 1;
+    private static final int MAX_COLUMN_INDEX = 13;
+    private static final int MIN_COLUMN_INDEX = 0;
 
     private IOUtils() {
     }
