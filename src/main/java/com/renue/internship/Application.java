@@ -14,7 +14,7 @@ import java.util.Scanner;
 import static com.renue.internship.util.IOUtils.parseColumnIndex;
 
 public class Application {
-    private static final String FILE_NAME = "..\\airports.csv";
+    private static final String FILE_NAME = "airports.csv";
 
     public static void main(String[] args) {
         parseColumnIndex(args);

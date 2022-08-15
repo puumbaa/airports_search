@@ -9,7 +9,7 @@ public abstract class Parser<T> {
     protected final String fileAbsolutePath;
 
     protected Parser(String filename) {
-        String fileSeparator = System.getenv("file.separator");
+        String fileSeparator = File.separator;
         if (filename.contains("\\") && !fileSeparator.equals("\\")) {
             filename = filename.replaceAll("\\\\", fileSeparator);
         }
