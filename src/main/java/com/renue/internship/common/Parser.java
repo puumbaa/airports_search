@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public abstract class Parser<T> {
     protected final String fileAbsolutePath;
 
     protected Parser(String filename) {
+        String fileSeparator = System.getenv("file.separator");
+        if (filename.contains("\\") && !fileSeparator.equals("\\")) {
+            filename = filename.replaceAll("\\\\", fileSeparator);
+        }
         this.fileAbsolutePath = new File(filename).getAbsolutePath();
     }
 
