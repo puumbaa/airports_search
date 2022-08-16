@@ -59,8 +59,11 @@ public class AutoCompleteTrieImpl implements AutoComplete {
         return hits.stream()
                 .parallel()
                 .map(offset -> from(parser.parseLine(offset), columnIndex))
-                .filter(resultEntry -> query.length() < trie.getDepth() || resultEntry.getWord().startsWith(query))
+                .filter(resultEntry -> query.length() < trie.getDepth() || resultEntry.getNormalizedWord().startsWith(query))
                 .sorted(trie.getComparator())
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 }
+// 778376
+// 985871
+// 4252,"Stokmarknes Skagen Airport","Stokmarknes","Norway","SKN","ENSK",68.578826904297,15.033416748047,11,1,"E","Europe/Oslo","airport","OurAirports"

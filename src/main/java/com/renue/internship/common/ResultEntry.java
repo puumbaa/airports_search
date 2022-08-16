@@ -6,6 +6,9 @@ public class ResultEntry {
     public String getWord() {
         return word;
     }
+    public String getNormalizedWord(){
+        return word.replaceAll("\"","").toLowerCase();
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -35,7 +38,7 @@ public class ResultEntry {
 
     @Override
     public String toString() {
-        return word + "[" + line + "]\n";
+        return word + "[" + line + "]";
     }
 
     public String getLine() {
