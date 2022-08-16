@@ -1,22 +1,22 @@
 package com.renue.internship.common;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import com.renue.internship.util.IOUtils;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public abstract class Parser<T> {
-    protected final String fileAbsolutePath;
+    protected final String fileName;
+
 
     protected Parser(String filename) {
-        this.fileAbsolutePath = new File(filename).getAbsolutePath();
+        this.fileName = filename;
     }
 
     public String parseLine(long charsBefore) {
-        try (RandomAccessFile file = new RandomAccessFile(fileAbsolutePath, "r")) {
+        try (RandomAccessFile file = new RandomAccessFile(IOUtils.getTempFile(), "r")) {
             file.seek(charsBefore);
-            return new String(file.readLine().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            return new String(file.readLine().getBytes(StandardCharsets.ISO_8859_1),StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
