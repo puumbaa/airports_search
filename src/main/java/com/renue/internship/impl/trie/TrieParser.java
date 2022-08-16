@@ -25,18 +25,13 @@ public class TrieParser extends Parser<Trie> {
             while (currentLine != null){
                 String word = Parser.getCell(columnIndex,currentLine,true);
                 if (word.equals("\\n")) {
+                    offset += currentLine.getBytes().length + System.lineSeparator().getBytes().length;
                     currentLine = reader.readLine();
                     continue;
                 }
                 destination.insert(word, offset);
                 column.add(word);
-
-                long notOneByteCharactersCount = 0;
-                for (int j = 0; j < currentLine.length(); j++) {
-                    notOneByteCharactersCount += String.valueOf(currentLine.charAt(j)).getBytes().length - 1;
-                }
-                offset += currentLine.length() + notOneByteCharactersCount + System.lineSeparator().length();
-
+                offset += currentLine.getBytes().length + System.lineSeparator().getBytes().length;
                 currentLine = reader.readLine();
             }
             destination.setType(Type.get(column));

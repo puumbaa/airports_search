@@ -16,9 +16,9 @@ public abstract class Parser<T> {
         this.fileAbsolutePath = new File(filename).getAbsolutePath();
     }
 
-    public String parseLine(long charsBefore) {
+    public String parseLine(long bytesBeforeRow) {
         try (RandomAccessFile file = new RandomAccessFile(fileAbsolutePath, "r")) {
-            file.seek(charsBefore);
+            file.seek(bytesBeforeRow);
             return new String(file.readLine().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -7,6 +7,10 @@ public class ResultEntry {
         return word;
     }
 
+    public String getNormalizedWord(){
+        return word.replaceAll("\"", "").toLowerCase();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

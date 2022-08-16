@@ -59,7 +59,7 @@ public class AutoCompleteTrieImpl implements AutoComplete {
         return hits.stream()
                 .parallel()
                 .map(offset -> from(parser.parseLine(offset), columnIndex))
-                .filter(resultEntry -> query.length() < trie.getDepth() || resultEntry.getWord().startsWith(query))
+                .filter(resultEntry -> query.length() < trie.getDepth() || resultEntry.getNormalizedWord().startsWith(query))
                 .sorted(trie.getComparator())
                 .collect(Collectors.toCollection(LinkedList::new));
     }
