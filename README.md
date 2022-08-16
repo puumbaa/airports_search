@@ -3,6 +3,8 @@ ___
 Консольное Java-приложение, позволяющее быстро искать
 данные аэропортов по вводимому пользователем тексту.
 
+[Видео-демонстрация работы приложения](https://youtu.be/Sl24ddAjS5c)
+
 #### Предысловие
 В ходе написания приложения я пришел к двум реализациям:
 1. На основе префиксного дерева
@@ -10,10 +12,10 @@ ___
 
 В качестве окончательного решения я выбрал вариант на основе дерева, но я не стал убирать второй вариант: может быть, вам будет интересно взглянуть.
 
-#### Запуск
+
+### Запуск
 1. `git clone https://github.com/puumbaa/airports_search.git`
 2. `cd airports_search`
-3. `git checkout prod`
-4. `mvn clean package`
-5. `cd target`
-6. `java -Xmx7m -jar airports-search-1.0-SNAPSHOT.jar [column]`
+3. `mvn clean package`
+4. `cd target`
+5. `java -Xmx7m -jar airports-search-1.0-SNAPSHOT.jar [column]`
